@@ -2,6 +2,8 @@ package neural_networks;
 
 import java.io.Serializable;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class NEAT implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -42,10 +44,11 @@ public class NEAT implements Serializable {
 	/**
 	 * To be added
 	 * @param old
+	 * @throws NotImplementedException
 	 * @return
 	 */
 	NEAT[] crossover(NEAT[] old) {
-		return null;
+		throw new NotImplementedException();
 	}
 	
 }
