@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Population<T 
-	extends IFitnessCalc & IBrain & IThink & ICopy<T> & IFactory<T> & IActive> 
+	extends IPopulation<T>> 
 {
 	
 	ArrayList<T> alive = new ArrayList<T>();
@@ -12,7 +12,7 @@ public class Population<T
 	
 	
 	
-	public Population(int popSize, IFactory<T> fact) {
+	public Population(int popSize, IPopulation<T> fact) {
 		for(int i = 0; i < popSize; i++) {
 			alive.add(fact.Factory());
 		}
@@ -20,7 +20,7 @@ public class Population<T
 	
 	public void Think() {
 		for(T entity : alive) {
-			entity.thinkWrapper();
+			entity.ThinkWrapper();
 		}
 	}
 	
@@ -50,22 +50,22 @@ public class Population<T
 		int index = 0;
 	    float r = (float) (ran.nextDouble()*totalFitness);
 	    while (r > 0) {
-	      r = r - dead.get(index).fitness();
+	      r = r - dead.get(index).Fitness();
 	      index++;
 	    }
 	    index--;
-	    T child = dead.get(index).copy();
+	    T child = dead.get(index).Copy();
 	    return child;
 	}
 	
 	float calcFitness(){
 		for(T entity : dead) {
-			entity.calcFitness();
+			entity.CalcFitness();
 		}
 		
 		float totalFitness = 0;
 		for(T entity : dead) {
-			totalFitness += entity.fitness();
+			totalFitness += entity.Fitness();
 		}
 		return totalFitness;
 	}
