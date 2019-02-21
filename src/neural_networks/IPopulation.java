@@ -4,8 +4,9 @@
 package neural_networks;
 
 /**
+ * Interface for the Population class
  * @author Victor
- *
+ * 
  */
 public interface IPopulation<T> {
 	boolean Active();

@@ -3,36 +3,60 @@ package neural_networks;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Population<T 
-	extends IPopulation<T>> 
+/**
+ * 
+ * @author Victor
+ *
+ * @param <T> Entity with brain
+ */
+public class Population<T extends IPopulation<T>> 
 {
-	
 	ArrayList<T> alive = new ArrayList<T>();
 	ArrayList<T> dead = new ArrayList<T>();
 	
+	/**
+	 * Get all entities that are still alive
+	 * @return All entities that are still alive
+	 */
+	public ArrayList<T> GetAlive(){
+		return alive;
+	}
 	
-	
+	/**
+	 * Constructor
+	 * @param popSize Size of the population
+	 * @param fact Constructor for the entity
+	 */
 	public Population(int popSize, IPopulation<T> fact) {
 		for(int i = 0; i < popSize; i++) {
 			alive.add(fact.Factory());
 		}
 	}
 	
+	/**
+	 * Method for thinking
+	 */
 	public void Think() {
 		for(T entity : alive) {
 			entity.ThinkWrapper();
 		}
 	}
 	
+	/**
+	 * Kill all entities that should be killed
+	 */
 	public void Kill() {
-		for(int i = 0; i < alive.size(); i++) {
+		for(int i = alive.size()-1; i >= 0; i--) {
 			if(!alive.get(i).Active()) {
 				dead.add(alive.remove(i));
 			}
 		}
 	}
 	
-	public void nextGen() {
+	/**
+	 * Breeds the next generation based on the previous one
+	 */
+	public void NextGen() {
 		float totalFitness = calcFitness();
 		for(int i = 0; i < dead.size(); i++) {
 			T child = pickOne(totalFitness);
@@ -41,7 +65,11 @@ public class Population<T
 		dead.clear();
 	}
 	
-	public boolean isDead() {
+	/**
+	 * Check if generation is dead
+	 * @return True if all entities in the generation are dead
+	 */
+	public boolean IsDead() {
 		return alive.size() <= 0;
 	}
 	
