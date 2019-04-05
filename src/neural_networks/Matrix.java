@@ -28,6 +28,7 @@ package neural_networks;
 import java.io.Serializable;
 import java.util.Random;
 import processing.core.PApplet;
+import processing.core.PVector;
 
 public class Matrix implements Serializable {
 	/**
@@ -81,6 +82,19 @@ public class Matrix implements Serializable {
 			table[i][0] = m[i];
 		}
 	}
+	
+	/**
+	 * 
+	 * @param v 3D Processing PVector
+	 */
+	public Matrix(PVector v) {
+		rows = 3;
+		cols = 1;
+		table = new float[rows][cols];
+	    table[0][0] = v.x;
+	    table[1][0] = v.y;
+	    table[2][0] = v.z;
+	  }
 
 	/**
 	 * 
@@ -229,6 +243,18 @@ public class Matrix implements Serializable {
 			}
 		}
 		return res;
+	}
+	
+	/**
+	 * 
+	 * @return 3D Processing PVector
+	 * @throws Exception Matrix not 3x1
+	 */
+	public PVector toVector() {
+		if (rows == 3 && cols == 1) 
+		      return new PVector(table[0][0], table[1][0], table[2][0]);
+		else
+			return null;
 	}
 
 	public final static String VERSION = "##version##";
