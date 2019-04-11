@@ -10,6 +10,10 @@ abstract class Neural_network implements Serializable {
 		return 1 / (1 + (float) Math.exp(-val));
 	}
 
+	protected float tanh(float val) {
+		return (float)(Math.tanh(val));
+	}
+	
 	protected Matrix softmax(Matrix m) {
 		Matrix res = m.copy();
 		float total = 0;
@@ -31,14 +35,16 @@ abstract class Neural_network implements Serializable {
 	protected float neatSigmoid(float val) {
 		return 1 / (1 + (float) Math.exp(-4.9 * val));
 	}
-
-	protected static final int SIGMOID = 0;
-	protected static final int SOFTMAXSIG = 1;
-	protected static final int TANH = 2;
-	protected static final int SOFTMAXTANH = 3;
-	protected static final int GAUSSIAN = 4;
-	protected static final int SOFTMAXGAUSSIAN = 5;
-	protected static final int NEAT = 6;
+	
+	public enum activationFunction {
+		SIGMOID,
+		SOFTMAXSIG,
+		TANH,
+		SOFTMAXTANH,
+		GAUSSIAN,
+		SOFTMAXGAUSSIAN,
+		NEAT
+	}
 
 	protected Matrix inputs;
 	protected Matrix[] hidden;
@@ -52,7 +58,7 @@ abstract class Neural_network implements Serializable {
 	protected Matrix[] weightsBH;
 	protected Matrix weightBO;
 
-	protected int activation;
+	protected activationFunction activation;
 
 	/**
 	 * 
@@ -62,32 +68,8 @@ abstract class Neural_network implements Serializable {
 	 * @param activation Which activation function/s to use
 	 * 
 	 */
-	protected Neural_network(int inputs_, int[] hidden_, int outputs_, String activation) {
-		switch (activation) {
-		case "sigmoid":
-			this.activation = SIGMOID;
-			break;
-		case "softmax_sigmoid":
-			this.activation = SOFTMAXSIG;
-			break;
-		case "tanh":
-			this.activation = TANH;
-			break;
-		case "softmax_tanh":
-			this.activation = SOFTMAXTANH;
-			break;
-		case "gaussian":
-			this.activation = GAUSSIAN;
-			break;
-		case "softmax_gaussian":
-			this.activation = SOFTMAXGAUSSIAN;
-			break;
-		case "NEAT":
-			this.activation = NEAT;
-		default:
-			this.activation = SIGMOID;
-			break;
-		}
+	protected Neural_network(int inputs_, int[] hidden_, int outputs_, activationFunction activation) {
+		this.activation = activation;
 		hidden = new Matrix[hidden_.length];
 
 		inputs = new Matrix(inputs_, 1);
@@ -163,6 +145,9 @@ abstract class Neural_network implements Serializable {
 			}
 			break;
 		case TANH:
+			for(int i = 0; i < tempIH.rows; i++) {
+				hidden_[0].table[i][0] = tanh(tempIH.table[i][0]);
+			}
 			break;
 		case SOFTMAXTANH:
 			break;
@@ -201,6 +186,9 @@ abstract class Neural_network implements Serializable {
 				}
 				break;
 			case TANH:
+				for (int i = 0; i < tempHH.rows; i++) {
+					hidden_[n + 1].table[i][0] = tanh(tempHH.table[i][0]);
+				}
 				break;
 			case SOFTMAXTANH:
 				break;
@@ -238,6 +226,9 @@ abstract class Neural_network implements Serializable {
 				outputs_ = softmax(outputs_);
 				break;
 			case TANH:
+				for (int j = 0; j < tempHO.cols; j++) {
+					outputs_.table[i][j] = tanh(tempHO.table[i][j]);
+				}
 				break;
 			case SOFTMAXTANH:
 				outputs_ = softmax(outputs_);

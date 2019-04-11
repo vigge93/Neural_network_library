@@ -25,7 +25,7 @@ public class ENN extends Neural_network implements Serializable {
 	 * @param outputs_ No. output nodes
 	 * @param activation Activation/loss function to use
 	 */
-    public ENN(int inputs_, int[] hidden_, int outputs_, String activation) {
+    public ENN(int inputs_, int[] hidden_, int outputs_, activationFunction activation) {
         super(inputs_, hidden_, outputs_, activation);
     }
     

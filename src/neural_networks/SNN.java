@@ -8,11 +8,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class SNN extends Neural_network implements Serializable {
-	
+
 	protected float dsigmoid(float val) {
 		return val * (1 - val);
 	}
-	
+
 	protected Matrix dSoftmax(Matrix m) {
 		Matrix res = m.copy();
 		res = softmax(res);
@@ -21,7 +21,11 @@ public class SNN extends Neural_network implements Serializable {
 		}
 		return res;
 	}
-	
+
+	protected float dtanh(float val) {
+		return 1 - val * val;
+	}
+
 	protected float crossentropy_loss(Matrix answer, Matrix predicted) {
 		float sum = 0;
 		for (int i = 0; i < answer.rows; i++) {
@@ -33,15 +37,15 @@ public class SNN extends Neural_network implements Serializable {
 	protected int kronecker_delta(int a, int b) {
 		return a == b ? 1 : 0;
 	}
-	
+
 	private static final long serialVersionUID = 1L;
-	
-	public float learningrate = (float)0.01;
-	
-	public SNN(int inputs_, int[] hidden_, int outputs_, String activation) {
-        super(inputs_, hidden_, outputs_, activation);
-    }
-	
+
+	public float learningrate = (float) 0.01;
+
+	public SNN(int inputs_, int[] hidden_, int outputs_, activationFunction activation) {
+		super(inputs_, hidden_, outputs_, activation);
+	}
+
 	protected float[] guessTraining(float[] in) {
 		inputs = new Matrix(in);
 
@@ -61,6 +65,9 @@ public class SNN extends Neural_network implements Serializable {
 			}
 			break;
 		case TANH:
+			for (int i = 0; i < tempIH.rows; i++) {
+				hidden[0].table[i][0] = tanh(tempIH.table[i][0]);
+			}
 			break;
 		case SOFTMAXTANH:
 			break;
@@ -92,6 +99,9 @@ public class SNN extends Neural_network implements Serializable {
 				}
 				break;
 			case TANH:
+				for (int i = 0; i < tempHH.rows; i++) {
+					hidden[n + 1].table[i][0] = tanh(tempHH.table[i][0]);
+				}
 				break;
 			case SOFTMAXTANH:
 				break;
@@ -121,6 +131,9 @@ public class SNN extends Neural_network implements Serializable {
 			outputs = softmax(outputs);
 			break;
 		case TANH:
+			for (int i = 0; i < tempHO.rows; i++) {
+				outputs.table[i][0] = tanh(tempHO.table[i][0]);
+			}
 			break;
 		case SOFTMAXTANH:
 			outputs = softmax(outputs);
@@ -168,11 +181,40 @@ public class SNN extends Neural_network implements Serializable {
 		// Adjust weights
 		// Output to hidden
 		Matrix gradient = new Matrix(outputs.rows, outputs.cols);
-		for (int i = 0; i < outputs.rows; i++) {
-			for (int j = 0; j < outputs.cols; j++) {
-				gradient.table[i][j] = dsigmoid(outputs.table[i][j]);// outputs.table[i][j]*(1-outputs.table[i][j]);
+		switch (activation) {
+		case SIGMOID:
+			for (int i = 0; i < outputs.rows; i++) {
+				for (int j = 0; j < outputs.cols; j++) {
+					gradient.table[i][j] = dsigmoid(outputs.table[i][j]);// outputs.table[i][j]*(1-outputs.table[i][j]);
+				}
 			}
+			break;
+		case SOFTMAXSIG:
+			break;
+		case TANH:
+			for (int i = 0; i < outputs.rows; i++) {
+				for (int j = 0; j < outputs.cols; j++) {
+					gradient.table[i][j] = dtanh(outputs.table[i][j]);// outputs.table[i][j]*(1-outputs.table[i][j]);
+				}
+			}
+			break;
+		case SOFTMAXTANH:
+			outputs = softmax(outputs);
+			break;
+		case GAUSSIAN:
+			break;
+		case SOFTMAXGAUSSIAN:
+			outputs = softmax(outputs);
+			break;
+		default:
+			for (int i = 0; i < outputs.rows; i++) {
+				for (int j = 0; j < outputs.cols; j++) {
+					gradient.table[i][j] = dsigmoid(outputs.table[i][j]);// outputs.table[i][j]*(1-outputs.table[i][j]);
+				}
+			}
+			break;
 		}
+		
 
 		// Multiply error and lr
 		gradient.multiply(errorsO);
@@ -186,12 +228,42 @@ public class SNN extends Neural_network implements Serializable {
 		// Hidden to hidden
 		for (int n = hidden.length - 1; n >= 1; n--) {
 			gradient = new Matrix(hidden[n].rows, hidden[n].cols);
-			for (int i = 0; i < gradient.rows; i++) {
-				for (int j = 0; j < gradient.cols; j++) {
-					gradient.table[i][j] = dsigmoid(hidden[n].table[i][j]);// hidden[n].table[i][j] * (1 -
-																			// hidden[n].table[i][j]);
+			switch (activation) {
+			case SIGMOID:
+				for (int i = 0; i < gradient.rows; i++) {
+					for (int j = 0; j < gradient.cols; j++) {
+						gradient.table[i][j] = dsigmoid(hidden[n].table[i][j]);// hidden[n].table[i][j] * (1 -
+																				// hidden[n].table[i][j]);
+					}
 				}
+				break;
+			case SOFTMAXSIG:
+				break;
+			case TANH:
+				for (int i = 0; i < gradient.rows; i++) {
+					for (int j = 0; j < gradient.cols; j++) {
+						gradient.table[i][j] = dtanh(hidden[n].table[i][j]);
+					}
+				}
+				break;
+			case SOFTMAXTANH:
+				outputs = softmax(outputs);
+				break;
+			case GAUSSIAN:
+				break;
+			case SOFTMAXGAUSSIAN:
+				outputs = softmax(outputs);
+				break;
+			default:
+				for (int i = 0; i < gradient.rows; i++) {
+					for (int j = 0; j < gradient.cols; j++) {
+						gradient.table[i][j] = dsigmoid(hidden[n].table[i][j]);// hidden[n].table[i][j] * (1 -
+																				// hidden[n].table[i][j]);
+					}
+				}
+				break;
 			}
+			
 			gradient.multiply(errorsH[n]);
 			gradient.multiply(learningrate);
 			weightsBH[n - 1] = Matrix.add(weightsBH[n - 1], gradient);
@@ -200,12 +272,43 @@ public class SNN extends Neural_network implements Serializable {
 
 		// Hidden to inputs
 		gradient = new Matrix(hidden[0].rows, hidden[0].cols);
-		for (int i = 0; i < gradient.rows; i++) {
-			for (int j = 0; j < gradient.cols; j++) {
-				gradient.table[i][j] = dsigmoid(hidden[0].table[i][j]);// hidden[0].table[i][j] * (1 -
-																		// hidden[0].table[i][j]);
+		switch (activation) {
+		case SIGMOID:
+			for (int i = 0; i < gradient.rows; i++) {
+				for (int j = 0; j < gradient.cols; j++) {
+					gradient.table[i][j] = dsigmoid(hidden[0].table[i][j]);// hidden[0].table[i][j] * (1 -
+																			// hidden[0].table[i][j]);
+				}
 			}
+			break;
+		case SOFTMAXSIG:
+			break;
+		case TANH:
+			for (int i = 0; i < gradient.rows; i++) {
+				for (int j = 0; j < gradient.cols; j++) {
+					gradient.table[i][j] = dtanh(hidden[0].table[i][j]);// hidden[0].table[i][j] * (1 -
+																			// hidden[0].table[i][j]);
+				}
+			}
+			break;
+		case SOFTMAXTANH:
+			outputs = softmax(outputs);
+			break;
+		case GAUSSIAN:
+			break;
+		case SOFTMAXGAUSSIAN:
+			outputs = softmax(outputs);
+			break;
+		default:
+			for (int i = 0; i < gradient.rows; i++) {
+				for (int j = 0; j < gradient.cols; j++) {
+					gradient.table[i][j] = dsigmoid(hidden[0].table[i][j]);// hidden[0].table[i][j] * (1 -
+																			// hidden[0].table[i][j]);
+				}
+			}
+			break;
 		}
+		
 
 		// Multiply error and lr
 		gradient.multiply(errorsH[0]);
@@ -215,7 +318,7 @@ public class SNN extends Neural_network implements Serializable {
 		weightBI = Matrix.add(weightBI, gradient);
 		weightsIH = Matrix.add(weightsIH, Matrix.multiply(gradient, Matrix.transpose(inputs)));
 	}
-	
+
 	public static SNN load(String filename) {
 		SNN res = null;
 		try {
@@ -244,5 +347,5 @@ public class SNN extends Neural_network implements Serializable {
 			i.printStackTrace();
 		}
 	}
-	
+
 }
