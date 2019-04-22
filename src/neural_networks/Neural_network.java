@@ -258,7 +258,7 @@ abstract class Neural_network implements Serializable {
 	 * @param arr Array to analyze
 	 * @return float[2] [index, value at index]
 	 */
-	public static float[] get_max(float[] arr) {
+	public static float[] getMax(float[] arr) {
 		int index = -1;
 		float max = Float.NEGATIVE_INFINITY;
 		for (int i = 0; i < arr.length; i++) {
