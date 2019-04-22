@@ -18,7 +18,7 @@ public class Population<T extends IPopulation<T>>
 	 * Get all entities that are still alive
 	 * @return All entities that are still alive
 	 */
-	public ArrayList<T> GetAlive(){
+	public ArrayList<T> getAlive(){
 		return alive;
 	}
 	
@@ -27,27 +27,27 @@ public class Population<T extends IPopulation<T>>
 	 * @param popSize Size of the population
 	 * @param fact Constructor for the entity
 	 */
-	public Population(int popSize, IPopulation<T> fact) {
+	public Population(int popSize, IPopulation<T> fact, Object... args) {
 		for(int i = 0; i < popSize; i++) {
-			alive.add(fact.Factory());
+			alive.add(fact.factory(args));
 		}
 	}
 	
 	/**
 	 * Method for thinking
 	 */
-	public void Think() {
+	public void think(Object... args) {
 		for(T entity : alive) {
-			entity.ThinkWrapper();
+			entity.think(args);
 		}
 	}
 	
 	/**
 	 * Kill all entities that should be killed
 	 */
-	public void Kill() {
+	public void kill(Object... args) {
 		for(int i = alive.size()-1; i >= 0; i--) {
-			if(!alive.get(i).Active()) {
+			if(!alive.get(i).isAlive(args)) {
 				dead.add(alive.remove(i));
 			}
 		}
@@ -56,8 +56,8 @@ public class Population<T extends IPopulation<T>>
 	/**
 	 * Breeds the next generation based on the previous one
 	 */
-	public void NextGen() {
-		float totalFitness = calcFitness();
+	public void nextGen(Object... args) {
+		float totalFitness = calcFitness(args);
 		for(int i = 0; i < dead.size(); i++) {
 			T child = pickOne(totalFitness);
 			alive.add(child);
@@ -69,7 +69,7 @@ public class Population<T extends IPopulation<T>>
 	 * Check if generation is dead
 	 * @return True if all entities in the generation are dead
 	 */
-	public boolean IsDead() {
+	public boolean isDead() {
 		return alive.size() <= 0;
 	}
 	
@@ -78,7 +78,7 @@ public class Population<T extends IPopulation<T>>
 		int index = 0;
 	    float r = (float) (ran.nextDouble()*totalFitness);
 	    while (r > 0) {
-	      r = r - dead.get(index).Fitness();
+	      r = r - dead.get(index).fitness();
 	      index++;
 	    }
 	    index--;
@@ -86,14 +86,14 @@ public class Population<T extends IPopulation<T>>
 	    return child;
 	}
 	
-	float calcFitness(){
+	float calcFitness(Object... args){
 		for(T entity : dead) {
-			entity.CalcFitness();
+			entity.calcFitness(args);
 		}
 		
 		float totalFitness = 0;
 		for(T entity : dead) {
-			totalFitness += entity.Fitness();
+			totalFitness += entity.fitness();
 		}
 		return totalFitness;
 	}
