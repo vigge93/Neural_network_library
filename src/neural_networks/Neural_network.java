@@ -2,7 +2,7 @@ package neural_networks;
 
 import java.io.Serializable;
 
-abstract class Neural_network implements Serializable {
+public abstract class Neural_network implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
