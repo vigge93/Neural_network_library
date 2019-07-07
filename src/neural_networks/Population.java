@@ -77,11 +77,13 @@ public class Population<T extends IPopulation<T>>
 		Random ran = new Random();
 		int index = 0;
 	    float r = (float) (ran.nextDouble()*totalFitness);
-	    while (r > 0) {
+
+	    while (r >= 0 && index < dead.size()) {
 	      r = r - dead.get(index).fitness();
 	      index++;
 	    }
 	    index--;
+	    if(index >= dead.size()) index = dead.size()-1;
 	    T child = dead.get(index).Copy();
 	    return child;
 	}
