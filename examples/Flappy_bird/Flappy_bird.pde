@@ -1,24 +1,36 @@
-import neural_networks.ENN;
+import neural_networks.*;
+
+PImage bird_img;
+PImage pipe_img;
+PImage background_img;
+
+float baseX = 640, baseY = 420;
+float scaleX, scaleY;
 
 ArrayList<Pipe> pipes = new ArrayList<Pipe>();
-
-Population birds;
-int populationSize = 500;
-
+Population<Bird> birds;
+int generation = 1;
 int n = 0;
 int cycles = 1;
 
-boolean showBest = false;
-
-
 void setup() {
-  size(640, 420);
-  birds = new Population(populationSize);
+  //size(640, 420);
+  fullScreen(P2D);
+  birds = new Population<Bird>(populationSize, new Bird());
+  bird_img = loadImage("bird.png");
+  pipe_img = loadImage("pipe.png");
+  background_img = loadImage("background.jpg");
+  bird_img.resize(24, 24);
+  imageMode(CENTER);
+
+  scaleX = width/baseX;
+  scaleY = height/baseY;
 }
 
 void draw() {
+  scale(scaleX, scaleY);
   background(0);
-
+  image(background_img, baseX/2, baseY/2, baseX, baseY);
   for (int k = 0; k < cycles; k++) {
     if (n % 75 == 0) {
       pipes.add(new Pipe());
@@ -31,38 +43,25 @@ void draw() {
     }
 
 
-    if (showBest) {
-      birds.best.think(pipes);
-      birds.best.update();
-    } else {
-      birds.think(pipes); 
-      birds.update(pipes);
-      birds.calcBest();
-    }
+    birds.think(pipes.toArray(new Pipe[1]));
+    birds.kill(pipes.toArray(new Pipe[0]));
     n++;
-    if (showBest) {
-      for (int i = 0; i < pipes.size(); i++) {
-        if (pipes.get(i).hits(birds.best)) {
-          n = 0;
-          pipes.clear();
-          birds.calcBest();
-        }
-      }
-    } else if (birds.alive.size() < 1) {
+    if (birds.isDead()) {
       birds.nextGen();
+      generation++;
       n = 0;
       pipes.clear();
     }
   }
-  if (!showBest) {
-    birds.show();
-  } else {
-    birds.best.show();
+  for (Bird b : birds.getAlive())
+  {
+    b.show();
   }
   for (Pipe p : pipes) {
     p.show();
   }
   text(n, 20, 20);
+  text(generation, 80, 20);
 }
 
 void keyPressed() {
@@ -76,12 +75,5 @@ void keyPressed() {
     if (cycles < 1) {
       cycles = 1;
     }
-  } else if (key == 'b') {
-    n = 0; 
-    pipes.clear();
-    if (showBest == true) {
-      birds.nextGen();
-    }
-    showBest = !showBest;
   }
 }

@@ -9,21 +9,21 @@ class Pipe {
 
   Pipe() {
     spacing = 75;
-    centery = random(spacing, height-spacing);
+    centery = random(spacing, baseY-spacing);
     top = centery-spacing/2;
-    bottom = height - (centery+spacing/2);
-    x = width;
+    bottom = baseY - (centery+spacing/2);
+    x = baseX;
     w = 80;
     speed = 6;
   }
 
   boolean hits(Bird bird) {
-    if (bird.y - bird.r < top || bird.y + bird.r > height - bottom) {
+    if (bird.y - bird.r < top || bird.y + bird.r > baseY - bottom) {
       if (bird.x > x && bird.x < x + w) {
         return true;
       }
     }
-    if (bird.y > height || bird.y < 0) {
+    if (bird.y > baseY || bird.y < 0) {
       return true;
     }
 
@@ -38,10 +38,12 @@ class Pipe {
   }
 
   void show() {
-    fill(250);
-    stroke(255);
-    rect(x, 0, w, top);
-    rect(x, height-bottom, w, bottom);
+    image(pipe_img, x+w/2, baseY-bottom/2, w, bottom);
+    pushMatrix();
+    translate(x + w/2, top/2);
+    rotate(PI);
+    image(pipe_img, 0, 0, w, top);
+    popMatrix();
   }
 
   void update() {
