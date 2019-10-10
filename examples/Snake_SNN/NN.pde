@@ -28,7 +28,7 @@ void train() {
 void error() {
     int correct = 0;
     for (int i = 0; i < test_inputs.size(); i++) {
-        int guess = int(SNN.get_max(nn.guess(test_inputs.get(i)))[0]);
+        int guess = int(SNN.getMax(nn.guess(test_inputs.get(i)))[0]);
         if (test_outputs.get(i)[guess] == 1) {
             correct += 1;
         }
@@ -45,7 +45,7 @@ void guess() {
     }
     grid_flat[grid_flat.length-1] = direction;
     float[] prediction = nn.guess(grid_flat);
-    int guessed_direction = int(SNN.get_max(prediction)[0]);
+    int guessed_direction = int(SNN.getMax(prediction)[0]);
     direction = guessed_direction;
 }
 

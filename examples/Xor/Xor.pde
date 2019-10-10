@@ -19,7 +19,7 @@ void settings() {
 void setup() {
   w = width/cols;
   h = height/rows;
-  nn = new SNN(2, layers, 1, "sigmoid");
+  nn = new SNN(2, layers, 1, Neural_network.activationFunction.SIGMOID);
   colorMode(RGB, 1.0);
   noStroke();
 }
@@ -46,6 +46,6 @@ void draw() {
 void keyPressed() {
   // Reset
   if (key == ' ') {
-    nn = new SNN(2, layers, 1, "sigmoid");
+    nn = new SNN(2, layers, 1, Neural_network.activationFunction.SIGMOID);
   }
 }

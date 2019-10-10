@@ -21,7 +21,7 @@ void setup() {
     test_outputs = read(PATH_TESTING_OUTPUTS);
     println("Training size: " + training_inputs.size() + "\tTesting size: " + test_inputs.size());
     if (nn == null) {
-        nn = new SNN(GAMESIZE*GAMESIZE+1, layers, 4, "sigmoid");
+        nn = new SNN(GAMESIZE*GAMESIZE+1, layers, 4, SNN.activationFunction.SIGMOID);
     }
     nn.learningrate = 0.001;
     reset();
