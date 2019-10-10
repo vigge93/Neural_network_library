@@ -32,7 +32,7 @@ import processing.core.PVector;
 
 public class Matrix implements Serializable {
 	/**
-	 * 
+	 * Properties
 	 */
 	private static final long serialVersionUID = 1L;
 	public int rows;
@@ -40,7 +40,7 @@ public class Matrix implements Serializable {
 	public float[][] table;
 
 	/**
-	 * 
+	 * Generate a matrix with default values of 0
 	 * @param rows    Number of rows
 	 * @param columns Number of columns
 	 */
@@ -56,7 +56,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Generate a matrix from a 2d-array
 	 * @param m Two dimensional array [rows][cols]
 	 */
 	public Matrix(float[][] m) {
@@ -71,7 +71,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Generate row matrix of type m by 1
 	 * @param m Array of rows
 	 */
 	public Matrix(float[] m) {
@@ -84,7 +84,7 @@ public class Matrix implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * Generates a 3x1 matrix from a 3D PVector
 	 * @param v 3D Processing PVector
 	 */
 	public Matrix(PVector v) {
@@ -97,13 +97,17 @@ public class Matrix implements Serializable {
 	  }
 
 	/**
-	 * 
+	 * Returns a deep copy of the matrix
 	 * @param m - Matrix to copy
+	 * @return Deep copy of m
 	 */
 	public Matrix copy() {
 		return new Matrix(this.table);
 	}
 
+	/**
+	 * Randomizes the values of the matrix between -1 and 1
+	 */
 	public void randomize() {
 		Random r = new Random();
 		for (int i = 0; i < rows; i++) {
@@ -114,7 +118,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Multiplies every element in the matrix with a scalar
 	 * @param scalar Scalar
 	 * @return Matrix
 	 */
@@ -128,7 +132,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Haddaman multiplication, multiplies each element of the matrix with the corresponding element in m
 	 * @param m Matrix to multiply with
 	 * @return Matrix
 	 */
@@ -142,7 +146,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Matrix multiplication
 	 * @param a Matrix a
 	 * @param b Matrix b
 	 * @return Matrix
@@ -162,8 +166,8 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
-	 * @param scalar Scalar
+	 * Adds a scalar to each element in the matrix
+	 * @param scalar Scalar to add
 	 * @return Matrix
 	 */
 	public Matrix add(float scalar) {
@@ -176,7 +180,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Adds two matrixes element-wise
 	 * @param a Matrix a
 	 * @param b Matrix b
 	 * @return Matrix
@@ -192,7 +196,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Subtracts two arrays element-wise. Same as multiplying one with -1 and adding them
 	 * @param a Matrix a
 	 * @param b Matrix b
 	 * @return Matrix
@@ -208,7 +212,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Transposes the matrix
 	 * @param m Matrix to transpose
 	 * @return Matrix
 	 */
@@ -222,6 +226,9 @@ public class Matrix implements Serializable {
 		return res;
 	}
 
+	/**
+	 * Prints the matrix to the console
+	 */
 	public void print() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
@@ -232,7 +239,7 @@ public class Matrix implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Converts the matrix to a 1d array
 	 * @return float[]
 	 */
 	public float[] toArray() {
@@ -246,7 +253,7 @@ public class Matrix implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * Converts a 3x1 matrix to a 3D PVector
 	 * @return 3D Processing PVector
 	 * @throws Exception Matrix not 3x1
 	 */
@@ -254,7 +261,7 @@ public class Matrix implements Serializable {
 		if (rows == 3 && cols == 1) 
 		      return new PVector(table[0][0], table[1][0], table[2][0]);
 		else
-			return null;
+			throw Exception;
 	}
 
 	public final static String VERSION = "##version##";
