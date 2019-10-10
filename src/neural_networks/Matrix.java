@@ -257,11 +257,11 @@ public class Matrix implements Serializable {
 	 * @return 3D Processing PVector
 	 * @throws Exception Matrix not 3x1
 	 */
-	public PVector toVector() {
+	public PVector toVector() throws Exception {
 		if (rows == 3 && cols == 1) 
 		      return new PVector(table[0][0], table[1][0], table[2][0]);
 		else
-			throw Exception;
+			throw new Exception();
 	}
 
 	public final static String VERSION = "##version##";
